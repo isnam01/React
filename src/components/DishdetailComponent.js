@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useReducer } from 'react';
 import { Card, CardImg, CardImgOverlay, CardText, CardBody,
     CardTitle, Breadcrumb, BreadcrumbItem, Label,
     Modal, ModalHeader, ModalBody, Button, Row, Col } from 'reactstrap';
@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import {Auth} from '../redux/auth';
 import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
-    function RenderDish({dish, favorite, postFavorite}) {
+    function RenderDish({dish, favorite, postFavorite,auth}) {
             return(
                 <div className="col-12 col-md-5 m-1">
                     <FadeTransform in 
@@ -17,15 +18,18 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
                         }}>
                         <Card>
                             <CardImg top src={baseUrl + dish.image} alt={dish.name} />
-                            <CardImgOverlay>
-                                <Button outline color="primary" onClick={() => favorite ? console.log('Already favorite') : postFavorite(dish._id)}>
-                                    {favorite ?
-                                        <span className="fa fa-heart"></span>
-                                        : 
-                                        <span className="fa fa-heart-o"></span>
-                                    }
-                                </Button>
-                            </CardImgOverlay>
+                            {auth.user ?
+                                <CardImgOverlay>
+                                    <Button outline color="primary" onClick={() => favorite ? console.log('Already favorite') : postFavorite(dish._id)}>
+                                        {favorite ?
+                                            <span className="fa fa-heart"></span>
+                                            : 
+                                            <span className="fa fa-heart-o"></span>
+                                        }
+                                    </Button>
+                                </CardImgOverlay>
+                                : null
+                            }
                             <CardBody>
                                 <CardTitle>{dish.name}</CardTitle>
                                 <CardText>{dish.description}</CardText>
@@ -37,7 +41,8 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
     }
 
-    function RenderComments({comments, postComment, dishId}) {
+
+    function RenderComments({comments, postComment, dishId,auth,deleteComment}) {
         if (comments != null)
             return(
                 <div className="col-12 col-md-5 m-1">
@@ -50,14 +55,24 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
                                         <li>
                                         <p>{comment.comment}</p>
                                         <p>{comment.rating} stars</p>
+                                        {auth.user && auth.user.username===comment.author.username ?
+                                           
+                                           <Button onClick={()=>deleteComment(comment._id)} style={{color:"white",backgroundColor:"maroon",fontSize:"12px"}}>Delete</Button>
+                                       
+                                       : null
+                                   }
                                         <p>-- {comment.author.firstname} {comment.author.lastname} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day:'2-digit'}).format(new Date(Date.parse(comment.updatedAt)))}</p>
                                         </li>
+                    
                                     </Fade>
                                 );
                             })}
                         </Stagger>
                     </ul>
-                    <CommentForm dishId={dishId} postComment={postComment} />
+                    {auth.user ?
+                        <CommentForm dishId={dishId} postComment={postComment} />
+                    : null
+                    }
                 </div>
             );
         else
@@ -163,10 +178,13 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
                         </div>
                     </div>
                     <div className="row">
-                        <RenderDish dish={props.dish} favorite={props.favorite} postFavorite={props.postFavorite} />
+                        <RenderDish dish={props.dish} favorite={props.favorite} postFavorite={props.postFavorite} auth={props.auth}/>
                         <RenderComments comments={props.comments}
                             postComment={props.postComment}
-                            dishId={props.dish._id} />
+                            deleteComment={props.deleteComment}
+                            dishId={props.dish._id}
+                            auth={props.auth} 
+                            />
                     </div>
                 </div>
             );

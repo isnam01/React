@@ -9,6 +9,7 @@ import { Auth } from './auth';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import { InitialFeedback } from './forms';
+import { Register } from './register';
 
 export const ConfigureStore = () => {
     const store = createStore(
@@ -18,6 +19,7 @@ export const ConfigureStore = () => {
             promotions: Promotions,
             leaders: Leaders,
             auth: Auth,
+            register:Register,
             favorites,
             ...createForms({
                 feedback: InitialFeedback

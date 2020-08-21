@@ -9,7 +9,7 @@ import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { postComment, postFeedback, fetchDishes, fetchComments, fetchPromos, fetchLeaders, loginUser, logoutUser, fetchFavorites, postFavorite, deleteFavorite } from '../redux/ActionCreators';
+import { postComment, postFeedback, fetchDishes, fetchComments, fetchPromos, fetchLeaders, loginUser, logoutUser, fetchFavorites, postFavorite, deleteFavorite,registerUser ,deleteComment} from '../redux/ActionCreators';
 import { actions } from 'react-redux-form';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
@@ -20,7 +20,8 @@ const mapStateToProps = state => {
       promotions: state.promotions,
       leaders: state.leaders,
       favorites: state.favorites,
-      auth: state.auth
+      auth: state.auth,
+      Register:state.register
     }
 }
 
@@ -33,10 +34,12 @@ const mapDispatchToProps = (dispatch) => ({
   fetchLeaders: () => dispatch(fetchLeaders()),
   postFeedback: (feedback) => dispatch(postFeedback(feedback)),
   loginUser: (creds) => dispatch(loginUser(creds)),
+  registerUser: (creds) => dispatch(registerUser(creds)),
   logoutUser: () => dispatch(logoutUser()),
   fetchFavorites: () => dispatch(fetchFavorites()),
   postFavorite: (dishId) => dispatch(postFavorite(dishId)),
-  deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId))
+  deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId)),
+  deleteComment:(commId)=>dispatch(deleteComment(commId))
 });
 
 class Main extends Component {
@@ -68,7 +71,7 @@ class Main extends Component {
 
     const DishWithId = ({match}) => {
       return(
-        this.props.auth.isAuthenticated
+        this.props.auth.isAuthenticated && this.props.favorites.favorites
         ?
         <DishDetail dish={this.props.dishes.dishes.filter((dish) => dish._id === match.params.dishId)[0]}
           isLoading={this.props.dishes.isLoading}
@@ -76,8 +79,10 @@ class Main extends Component {
           comments={this.props.comments.comments.filter((comment) => comment.dish === match.params.dishId)}
           commentsErrMess={this.props.comments.errMess}
           postComment={this.props.postComment}
+          auth={this.props.auth}
           favorite={this.props.favorites.favorites.dishes.some((dish) => dish._id === match.params.dishId)}
           postFavorite={this.props.postFavorite}
+          deleteComment={this.props.deleteComment}
           />
         :
         <DishDetail dish={this.props.dishes.dishes.filter((dish) => dish._id === match.params.dishId)[0]}
@@ -87,7 +92,9 @@ class Main extends Component {
           commentsErrMess={this.props.comments.errMess}
           postComment={this.props.postComment}
           favorite={false}
+          auth={this.props.auth}
           postFavorite={this.props.postFavorite}
+          deleteComment={this.props.deleteComment}
           />
       );
     }
@@ -105,9 +112,11 @@ class Main extends Component {
 
     return (
       <div>
-        <Header auth={this.props.auth} 
+        <Header auth={this.props.auth}
+          Register={this.props.Register} 
           loginUser={this.props.loginUser} 
-          logoutUser={this.props.logoutUser} 
+          logoutUser={this.props.logoutUser}
+          registerUser={this.props.registerUser}
           />   
         <TransitionGroup>
           <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>

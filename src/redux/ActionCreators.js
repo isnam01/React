@@ -108,11 +108,39 @@ export const commentsFailed = (errmess) => ({
     type: ActionTypes.COMMENTS_FAILED,
     payload: errmess
 });
-
 export const addComments = (comments) => ({
     type: ActionTypes.ADD_COMMENTS,
     payload: comments
 });
+
+
+export const deleteComment = (commId) => (dispatch) => {
+
+    const bearer = 'Bearer ' + localStorage.getItem('token');
+
+    return fetch(baseUrl + 'comments/' + commId, {
+        method: "DELETE",
+        headers: {
+          'Authorization': bearer
+        },
+        credentials: "same-origin"
+    })
+    .then(response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+            throw error;
+      })
+    .then(response => response.json())
+    .then(comments => { console.log('Comment Deleted', comments); dispatch(addComments(comments)); })
+    .catch(error => dispatch(commentsFailed(error.message)));
+};
 
 export const fetchPromos = () => (dispatch) => {
     dispatch(promosLoading(true));
@@ -211,7 +239,7 @@ export const postFeedback = (feedback) => (dispatch) => {
             throw error;
       })
     .then(response => response.json())
-    .then(response => { console.log('Feedback', response); alert('Thank you for your feedback!\n'+JSON.stringify(response)); })
+    .then(response => { console.log('Feedback', response);  })
     .catch(error =>  { console.log('Feedback', error.message); alert('Your feedback could not be posted\nError: '+error.message); });
 };
 
@@ -276,6 +304,63 @@ export const loginUser = (creds) => (dispatch) => {
         }
     })
     .catch(error => dispatch(loginError(error.message)))
+};
+
+export const requestRegister = (creds) => {
+    return {
+        type: ActionTypes.REGISTER_REQUEST,
+        creds
+    }
+}
+  
+export const receiveRegister = (response) => {
+    return {
+        type: ActionTypes.REGISTER_SUCCESS,
+    }
+}
+  
+export const registerError = (message) => {
+    return {
+        type: ActionTypes.REGISTER_FAILURE,
+        message
+    }
+}
+
+export const registerUser = (creds) => (dispatch) => {
+    // We dispatch requestLogin to kickoff the call to the API
+    dispatch(requestRegister(creds))
+
+    return fetch(baseUrl + 'users/signup', {
+        method: 'POST',
+        headers: { 
+            'Content-Type':'application/json' 
+        },
+        body: JSON.stringify(creds)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+        },
+        error => {
+            throw error;
+        })
+    .then(response => response.json())
+    .then(response => {
+        if (response.success) {           
+            dispatch(receiveRegister(response));
+        }
+        else {
+            var error = new Error('Error ' + response.status);
+            error.response = response;
+            throw error;
+        }
+    })
+    .catch(error =>{dispatch(registerError(error.message))})
 };
 
 export const requestLogout = () => {

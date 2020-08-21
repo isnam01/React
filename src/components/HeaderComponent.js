@@ -10,11 +10,14 @@ class Header extends Component {
         super(props);
         this.state = {
             isNavOpen: false,
-            isModalOpen: false
+            isloginModalOpen: false,
+            isregisterModalOpen: false
         };
         this.toggleNav = this.toggleNav.bind(this);
-        this.toggleModal = this.toggleModal.bind(this);
+        this.toggleloginModal = this.toggleloginModal.bind(this);
+        this.toggleregisterModal = this.toggleregisterModal.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleRegister = this.handleRegister.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
     }
 
@@ -24,15 +27,26 @@ class Header extends Component {
         });
     }
 
-    toggleModal() {
+    toggleloginModal() {
         this.setState({
-            isModalOpen: !this.state.isModalOpen
+            isloginModalOpen: !this.state.isloginModalOpen
+        });
+    }
+    toggleregisterModal() {
+        this.setState({
+            isregisterModalOpen: !this.state.isregisterModalOpen
         });
     }
 
     handleLogin(event) {
-        this.toggleModal();
+        this.toggleloginModal();
         this.props.loginUser({username: this.username.value, password: this.password.value});
+        event.preventDefault();
+
+    }
+    handleRegister(event) {
+        this.toggleregisterModal();
+        this.props.registerUser({username: this.username.value, password: this.password.value,lastname: this.lastname.value,firstname: this.firstname.value});
         event.preventDefault();
 
     }
@@ -82,13 +96,22 @@ class Header extends Component {
                             <Nav className="ml-auto" navbar>
                                 <NavItem>
                                     { !this.props.auth.isAuthenticated ?
-                                        <Button outline onClick={this.toggleModal}>
-                                            <span className="fa fa-sign-in fa-lg"></span> Login
-                                            {this.props.auth.isFetching ?
+                                        <div>
+                                        <Button outline onClick={this.toggleregisterModal} style={{margin:"0 5px"}}>
+                                            <span className="fa fa-sign-in fa-lg"></span> Register
+                                            {this.props.Register.isLoading ?
                                                 <span className="fa fa-spinner fa-pulse fa-fw"></span>
                                                 : null
                                             }
                                         </Button>
+                                        <Button outline onClick={this.toggleloginModal} style={{margin:"0 5px"}}>
+                                            <span className="fa fa-sign-in fa-lg"></span> Login
+                                            {this.props.auth.isLoading ?
+                                                <span className="fa fa-spinner fa-pulse fa-fw"></span>
+                                                : null
+                                            }
+                                        </Button>
+                                        </div>
                                         :
                                         <div>
                                         <div className="navbar-text mr-3">{this.props.auth.user.username}</div>
@@ -117,10 +140,10 @@ class Header extends Component {
                         </div>
                     </div>
                 </Jumbotron>
-                <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
-                    <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
+                <Modal isOpen={this.state.isloginModalOpen} toggle={this.toggleloginModal}>
+                    <ModalHeader toggle={this.toggleloginModal}>Login</ModalHeader>
                     <ModalBody>
-                        <Form onSubmit={this.handleLogin}>
+                    <Form onSubmit={this.handleLogin}>
                             <FormGroup>
                                 <Label htmlFor="username">Username</Label>
                                 <Input type="text" id="username" name="username"
@@ -140,6 +163,36 @@ class Header extends Component {
                             </FormGroup>
                             <Button type="submit" value="submit" color="primary">Login</Button>
                         </Form>
+                    </ModalBody>
+                </Modal>
+                <Modal isOpen={this.state.isregisterModalOpen} toggle={this.toggleregisterModal}>
+                    <ModalHeader toggle={this.toggleregisterModal}>Login</ModalHeader>
+                    <ModalBody>
+                    <Form onSubmit={this.handleRegister}>
+                            <FormGroup>
+                                <Label htmlFor="username">Username</Label>
+                                <Input type="text" id="username" name="username"
+                                    innerRef={(input) => this.username = input} />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="firstname">First Name</Label>
+                                <Input type="text" id="firstname" name="firstname"
+                                    innerRef={(input) => this.firstname = input} />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="lastname">Last Name</Label>
+                                <Input type="text" id="lastname" name="lastname"
+                                    innerRef={(input) => this.lastname = input} />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="password">Password</Label>
+                                <Input type="password" id="password" name="password"
+                                    innerRef={(input) => this.password = input}  />
+                            </FormGroup>
+                            
+                            <Button type="submit" value="submit" color="primary">Register</Button>
+                        </Form>
+                        
                     </ModalBody>
                 </Modal>
             </React.Fragment>
