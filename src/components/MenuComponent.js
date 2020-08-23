@@ -1,17 +1,15 @@
 import React from 'react';
-import { Card, CardImg, CardImgOverlay, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Card, CardImg, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
 
     function RenderMenuItem({ dish, onClick }) {
         return(
-            <Card>
+            <Card style={{marginBottom:"10px"}}>
                 <Link to={`/menu/${dish._id}`} >
-                    <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
-                    <CardImgOverlay>
-                        <CardTitle>{dish.name}</CardTitle>
-                    </CardImgOverlay>
+                    <CardTitle style={{fontSize:"15px",color:"black",paddingTop:"5px",paddingLeft:"2px"}}>{dish.name}&nbsp;&nbsp;<i class="fa fa-inr"></i>{dish.price}</CardTitle>
+                    <CardImg width="120px" height="220px" src={baseUrl + dish.image} alt={dish.name} />
                 </Link>
             </Card>
         );
@@ -21,7 +19,7 @@ import { baseUrl } from '../shared/baseUrl';
 
         const menu = props.dishes.dishes.map((dish) => {
             return (
-                <div key={dish._id} className="col-12 col-md-5 m-1">
+                <div key={dish._id} className="col-12 col-lg-3 col-md-5 ">
                     <RenderMenuItem dish={dish} />
                 </div>
             );

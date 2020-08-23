@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Media, Breadcrumb, BreadcrumbItem, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { baseUrl } from '../shared/baseUrl';
@@ -8,7 +8,7 @@ function RenderMenuItem({ dish, deleteFavorite }) {
     return(
         <Media tag="li">
             <Media left middle>
-                <Media object src={baseUrl + dish.image} alt={dish.name} />
+                <Media object width="100px" height="70px" src={baseUrl + dish.image} alt={dish.name} />
             </Media>
             <Media body className="ml-5">
                 <Media heading>{dish.name}</Media>

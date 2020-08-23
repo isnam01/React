@@ -1,4 +1,4 @@
-import React, { Component, useReducer } from 'react';
+import React, { Component} from 'react';
 import { Card, CardImg, CardImgOverlay, CardText, CardBody,
     CardTitle, Breadcrumb, BreadcrumbItem, Label,
     Modal, ModalHeader, ModalBody, Button, Row, Col } from 'reactstrap';
@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
-import {Auth} from '../redux/auth';
 import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
     function RenderDish({dish, favorite, postFavorite,auth}) {
@@ -17,7 +16,7 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
                             exitTransform: 'scale(0.5) translateY(-50%)'
                         }}>
                         <Card>
-                            <CardImg top src={baseUrl + dish.image} alt={dish.name} />
+                            <CardImg style={{maxHeight:"450px"}} top src={baseUrl + dish.image} alt={dish.name} />
                             {auth.user ?
                                 <CardImgOverlay>
                                     <Button outline color="primary" onClick={() => favorite ? console.log('Already favorite') : postFavorite(dish._id)}>
@@ -31,7 +30,7 @@ import { FadeTransform, Fade, Stagger } from 'react-animation-components';
                                 : null
                             }
                             <CardBody>
-                                <CardTitle>{dish.name}</CardTitle>
+                        <CardTitle>{dish.name}{dish.name}&nbsp;&nbsp;<i class="fa fa-inr"></i>{dish.price}</CardTitle>
                                 <CardText>{dish.description}</CardText>
                             </CardBody>
                         </Card>
